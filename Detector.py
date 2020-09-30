@@ -6,7 +6,7 @@ class Detector():
     def __init__(self):
         self.cameras = [0]
         self.yolo = YOLO(configPath = "yolov4/yolov4-tiny.cfg", weightPath = "yolov4/yolov4-tiny_final.weights",
-                 metaPath = "yolov4/obj.data", classPath = "yolov4/obj.names")
+                 classPath = "yolov4/obj.names")
         # self.items_count = self.detect()
         self.items_count = self.detect_image("images/1.jpg")
         print("Init", self.items_count)

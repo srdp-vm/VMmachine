@@ -5,9 +5,10 @@ import os
 import colorsys
 import time
 
+
 class YOLO:
-    def __init__(self, configPath = "", weightPath = "",
-                 classPath = ""):
+    def __init__(self, configPath="", weightPath="",
+                 classPath=""):
         if not os.path.exists(configPath):
             raise ValueError("Invalid config path `" +
                              os.path.abspath(configPath) + "`")
@@ -25,7 +26,6 @@ class YOLO:
 
     def __del__(self):
         dk.free_image(self.darknet_image)
-
 
     @staticmethod
     def getClass(classPath):
@@ -46,10 +46,9 @@ class YOLO:
         np.random.seed(None)  # Reset seed to default.
         return colors
 
-
     def convertBox(self, box, image_size):
         net_size = (dk.network_height(self.net), dk.network_width(self.net))
-        #计算在图片缩放时，填充了多大的边距框
+        # 计算在图片缩放时，填充了多大的边距框
         nsize, top, bottom, left, right = YOLO.calScale(image_size, net_size)
         x = (box[0] - left) / nsize[0] * image_size[1]
         y = (box[1] - top) / nsize[1] * image_size[0]
@@ -62,8 +61,7 @@ class YOLO:
         right = int(round(x + w / 2))
         return top, bottom, left, right
 
-
-    def drawBox(self, detections, image, showLabel = False):
+    def drawBox(self, detections, image, showLabel=False):
         thickness = (image.shape[0] + image.shape[1]) // 300
         thickness -= thickness % 2  # 保证为偶数
         for detection in detections:
@@ -99,7 +97,6 @@ class YOLO:
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
         return image
 
-
     @staticmethod
     def calScale(srcsize, dstsize):
         """不改变图像长宽比，使用填充缩放法，计算四个边应该填充的border尺寸"""
@@ -109,8 +106,7 @@ class YOLO:
         scale = min(w / sh, h / sw)
         nw = int(sw * scale)
         nh = int(sh * scale)
-        return (nw, nh),  (h - nh) // 2, h - nh - (h - nh) // 2, (w - nw) // 2, w - nw - (w - nw) // 2
-
+        return (nw, nh), (h - nh) // 2, h - nh - (h - nh) // 2, (w - nw) // 2, w - nw - (w - nw) // 2
 
     @staticmethod
     def letterbox_image(image, size):
@@ -121,8 +117,7 @@ class YOLO:
             image = cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[0, 0, 0])
         return image
 
-
-    def detect(self, image, showLabel = False):
+    def detect(self, image, showLabel=False):
         begin = time.time()
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         resized = YOLO.letterbox_image(image_rgb, (dk.network_width(self.net), dk.network_height(self.net)))
@@ -145,7 +140,6 @@ class YOLO:
         detections = dk.detect_image(self.net, self.class_names, self.darknet_image, self.thresh)
         for detection in detections:
             pred_class, score, box = detection
-            pred_class = pred_class.decode("utf-8")
-            count = items_count.get(pred_class, default=0)
-            items_count[pred_class] = count
+            count = items_count.get(pred_class, 0)
+            items_count[pred_class] = count + 1
         return items_count
