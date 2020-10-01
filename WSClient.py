@@ -6,7 +6,6 @@ from threading import Thread
 class WSClient:
     def __init__(self, url="ws://srdp-vm.cn/VMserver/websocket/machine"):
         # websocket.enableTrace(True)
-        super().__init__()
         self.ws = websocket.WebSocketApp(url=url,
                                         on_open=lambda w: self.on_open(w),
                                         on_message=lambda w, msg: self.on_message(w, msg),

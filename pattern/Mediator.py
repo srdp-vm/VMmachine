@@ -1,5 +1,6 @@
 import threading
-
+import json
+from message.Message import Item, Message
 
 class Mediator:
     _instance_lock = threading.Lock()
@@ -32,8 +33,15 @@ class Mediator:
         self.detector.detect()
 
     
-    def detect_difference(self):
-        return self.detector.detect_difference()
+    def settleup(self):
+        dif_count = self.detector.detect_difference()
+        items = []
+        for name, count in dif_count.items():
+            item = Item(name, count)
+            items.append(item)
+        message = Message("settleup", items)
+        self.wsSend(json.dumps(message, default=lambda x: x.__dict__))
+        self.closeTheDoor()
 
 
     def openTheDoor(self):

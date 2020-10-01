@@ -145,6 +145,7 @@ class YOLO:
         detections = dk.detect_image(self.net, self.class_names, self.darknet_image, self.thresh)
         for detection in detections:
             pred_class, score, box = detection
+            pred_class = int(pred_class)
             count = items_count.get(pred_class, 0)
             items_count[pred_class] = count + 1
         return items_count
