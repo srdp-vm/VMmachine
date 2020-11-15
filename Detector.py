@@ -4,7 +4,7 @@ from yolo import YOLO
 
 class Detector():
     def __init__(self):
-        self.cameras = [0]
+        self.cameras = [0, 1]
         self.yolo = YOLO(configPath = "yolov4/yolov4-tiny.cfg", weightPath = "yolov4/yolov4-tiny_final.weights",
                  classPath = "yolov4/obj.names")
         self.items_count = self.detect()
@@ -22,7 +22,8 @@ class Detector():
             capture = cv2.VideoCapture(cam)
             frame, res = capture.read()
             layer_count = self.yolo.count(frame)
-            items_count.update(layer_count)
+            for k, v in layer_count.items():
+                items_count[k] = items_count.get(k, 0) + v
             capture.release()
         return items_count
 
